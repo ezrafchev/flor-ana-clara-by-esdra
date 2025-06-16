@@ -9,13 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Instalar dependências
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
         run: npm ci
-      - name: Validar código
-        run: npm run lint
-      - name: Build do projeto
+      - name: Run lint
+        run: npm run lint -- --max-warnings=0
+      - name: Build project
         run: npm run build
-      - name: Deploy para GitHub Pages
+      - name: List build files
+        run: ls -la ./dist
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
