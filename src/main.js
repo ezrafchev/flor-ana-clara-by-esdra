@@ -57,6 +57,7 @@ function animateFlower() {
 }
 
 function init() {
+  console.log('Initializing flower animation...');
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
 
@@ -104,5 +105,10 @@ function animate() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM fully loaded and parsed');
+  if (!animationContainer) {
+    console.error('Animation container not found!');
+    return;
+  }
   init();
 });
