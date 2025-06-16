@@ -57,7 +57,6 @@ function animateFlower() {
 }
 
 function init() {
-  console.log('Initializing flower animation...');
   if (!animationContainer) {
     console.error('Animation container not found!');
     return;
@@ -112,6 +111,5 @@ function animate() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM fully loaded and parsed');
   init();
 });
