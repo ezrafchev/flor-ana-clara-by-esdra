@@ -58,17 +58,22 @@ function animateFlower() {
 
 function init() {
   console.log('Initializing flower animation...');
+  if (!animationContainer) {
+    console.error('Animation container not found!');
+    return;
+  }
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
 
-  const width = animationContainer.clientWidth;
-  const height = animationContainer.clientHeight;
+  const width = animationContainer.clientWidth || 800;
+  const height = animationContainer.clientHeight || 600;
 
   camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
   camera.position.set(0, 0, 5);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(width, height);
+  animationContainer.innerHTML = ''; // Clear container
   animationContainer.appendChild(renderer.domElement);
 
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -87,8 +92,8 @@ function init() {
 }
 
 function onWindowResize() {
-  const width = animationContainer.clientWidth;
-  const height = animationContainer.clientHeight;
+  const width = animationContainer.clientWidth || 800;
+  const height = animationContainer.clientHeight || 600;
 
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
@@ -99,16 +104,14 @@ function onWindowResize() {
 function animate() {
   requestAnimationFrame(animate);
 
-  flowerGroup.rotation.y += 0.01;
+  if (flowerGroup) {
+    flowerGroup.rotation.y += 0.01;
+  }
 
   renderer.render(scene, camera);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   console.log('DOM fully loaded and parsed');
-  if (!animationContainer) {
-    console.error('Animation container not found!');
-    return;
-  }
   init();
 });
