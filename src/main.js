@@ -11,7 +11,7 @@ function startAnimation() {
     renderer: 'svg',
     loop: true,
     autoplay: true,
-    path: '/src/animations/sample-animation.json', // Placeholder path
+    path: './src/animations/sample-animation.json', // Updated relative path
   });
 
   // Additional GSAP animations can be added here
