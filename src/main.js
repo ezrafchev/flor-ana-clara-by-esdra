@@ -1,35 +1,108 @@
+import * as THREE from 'three';
 import gsap from 'gsap';
-import lottie from 'lottie-web';
 
 const animationContainer = document.getElementById('animationContainer');
 
-function startAnimation() {
-  animationContainer.innerHTML = '';
+let scene, camera, renderer, flowerGroup;
 
-  try {
-    const anim = lottie.loadAnimation({
-      container: animationContainer,
-      renderer: 'svg',
-      loop: true,
-      autoplay: true,
-      path: './animations/sample-animation.json', // Adjusted path for GitHub Pages
-    });
+function createPetal() {
+  const geometry = new THREE.Shape();
 
-    anim.addEventListener('data_failed', () => {
-      console.error('Failed to load Lottie animation data.');
-    });
+  geometry.moveTo(0, 0);
+  geometry.bezierCurveTo(0.2, 0.5, 0.5, 1, 0, 1.5);
+  geometry.bezierCurveTo(-0.5, 1, -0.2, 0.5, 0, 0);
 
-    anim.addEventListener('error', (e) => {
-      console.error('Lottie animation error:', e);
-    });
-  } catch (error) {
-    console.error('Error initializing Lottie animation:', error);
+  const extrudeSettings = {
+    steps: 2,
+    depth: 0.1,
+    bevelEnabled: true,
+    bevelThickness: 0.05,
+    bevelSize: 0.05,
+    bevelSegments: 1,
+  };
+
+  const geometry3d = new THREE.ExtrudeGeometry(geometry, extrudeSettings);
+  const material = new THREE.MeshStandardMaterial({ color: 0xff69b4, roughness: 0.5, metalness: 0.1 });
+  const petal = new THREE.Mesh(geometry3d, material);
+
+  return petal;
+}
+
+function createFlower() {
+  flowerGroup = new THREE.Group();
+
+  const petalCount = 6;
+  for (let i = 0; i < petalCount; i++) {
+    const petal = createPetal();
+    petal.position.y = 0;
+    petal.rotation.z = (i * (2 * Math.PI)) / petalCount;
+    petal.scale.set(0.1, 0.1, 0.1);
+    flowerGroup.add(petal);
   }
 
-  // Simple GSAP fallback animation: fade in container background color
-  gsap.to(animationContainer, { duration: 1, backgroundColor: '#fbb6ce', opacity: 1 });
+  scene.add(flowerGroup);
+}
+
+function animateFlower() {
+  flowerGroup.children.forEach((petal, index) => {
+    gsap.to(petal.scale, {
+      x: 1,
+      y: 1,
+      z: 1,
+      duration: 1.5,
+      delay: index * 0.2,
+      ease: 'power2.out',
+    });
+  });
+}
+
+function init() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xffffff);
+
+  const width = animationContainer.clientWidth;
+  const height = animationContainer.clientHeight;
+
+  camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+  camera.position.set(0, 0, 5);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(width, height);
+  animationContainer.appendChild(renderer.domElement);
+
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+  scene.add(ambientLight);
+
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+  directionalLight.position.set(5, 5, 5);
+  scene.add(directionalLight);
+
+  createFlower();
+  animateFlower();
+
+  window.addEventListener('resize', onWindowResize, false);
+
+  animate();
+}
+
+function onWindowResize() {
+  const width = animationContainer.clientWidth;
+  const height = animationContainer.clientHeight;
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(width, height);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  flowerGroup.rotation.y += 0.01;
+
+  renderer.render(scene, camera);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  startAnimation();
+  init();
 });
