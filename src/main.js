@@ -1,11 +1,9 @@
 import gsap from 'gsap';
 import lottie from 'lottie-web';
 
-// Placeholder for animation logic
-const startButton = document.getElementById('startAnimation');
 const animationContainer = document.getElementById('animationContainer');
 
-startButton.addEventListener('click', () => {
+function startAnimation() {
   animationContainer.innerHTML = '';
   // Example: Load a Lottie animation or start GSAP animation here
   const anim = lottie.loadAnimation({
@@ -18,4 +16,9 @@ startButton.addEventListener('click', () => {
 
   // Additional GSAP animations can be added here
   gsap.to(animationContainer, { duration: 1, opacity: 1 });
+}
+
+// Start animation automatically on page load
+window.addEventListener('DOMContentLoaded', () => {
+  startAnimation();
 });
